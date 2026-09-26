@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Career Details | CareerMap</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f9fc;
+            color: #172033;
+        }
+
+        nav {
+            height: 70px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #374151;
+            margin-left: 25px;
+        }
+
+        nav a:hover {
+            color: #2563eb;
+        }
+
+        .container {
+            width: 88%;
+            max-width: 1100px;
+            margin: 45px auto;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .career-header {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            padding: 45px;
+            border-radius: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 35px rgba(37,99,235,0.18);
+        }
+
+        .career-header h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .career-header p {
+            font-size: 17px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .category {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-box {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            border: 1px solid #edf1f7;
+        }
+
+        .info-box.full {
+            grid-column: 1 / -1;
+        }
+
+        .info-box h3 {
+            font-size: 19px;
+            margin-bottom: 14px;
+            color: #172033;
+        }
+
+        .info-box p {
+            color: #64748b;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .roadmap {
+            margin-top: 10px;
+            padding: 18px;
+            background: #f0f6ff;
+            border-radius: 12px;
+            color: #334155;
+            line-height: 1.8;
+        }
+
+        .growth {
+            margin-top: 10px;
+            padding: 18px;
+            background: #f5f3ff;
+            border-radius: 12px;
+            color: #334155;
+            line-height: 1.8;
+        }
+
+        #message {
+            text-align: center;
+            color: #64748b;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 750px) {
+
+            nav {
+                padding: 0 5%;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 14px;
+            }
+
+            .container {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            .career-header {
+                padding: 30px 25px;
+            }
+
+            .career-header h1 {
+                font-size: 32px;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-box.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            nav {
+                height: auto;
+                padding: 18px 5%;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav a {
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+
+            .career-header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">CareerMap</div>
+
+        <div>
+            <a href="index.html">Home</a>
+            <a href="careers.html">Explore Careers</a>
+            <a href="quiz.html">Career Quiz</a>
+        </div>
+    </nav>
+
+    <div class="container">
+    
+        <div style="text-align: right; margin-bottom: 20px;">
+    <button
+        id="saveCareerBtn"
+        onclick="toggleSaveCareer()"
+        style="
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        "
+    >
+        ♡ Save Career
+    </button>
+</div>
+        <a href="careers.html" class="back">← Back to Careers</a>
+
+        <div id="message">
+            Loading career details...
+        </div>
+
+        <div id="careerContent" style="display:none;">
+
+            <!-- Career Header -->
+            <div class="career-header">
+
+                <h1 id="careerTitle"></h1>
+
+                <p id="careerDescription"></p>
+
+                <span class="category" id="careerCategory"></span>
+
+            </div>
+
+            <!-- Information Sections -->
+            <div class="section-grid">
+
+                <div class="info-box full">
+                    <h3>💼 Job Responsibilities</h3>
+                    <p id="careerResponsibilities"></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>🛠️ Required Skills</h3>
+                    <p id="careerSkills"></p>
+
+                
+
+
+
+<!-- PASTE SKILL GAP ANALYZER HERE -->
+
+<div style="
+    margin-top: 25px;
+    padding: 22px;
+    background: #f8fafc;
+    border-radius: 15px;
+    border: 1px solid #e5e7eb;
+">
+
+    <h2 style="margin-bottom: 10px;">
+        🧩 Skill Gap Analyzer
+    </h2>
+
+    <p style="color: #64748b; margin-bottom: 18px;">
+        Select the skills you already know:
+    </p>
+
+    <div id="skillChecklist"></div>
+
+    <button
+        onclick="analyzeSkills()"
+        style="
+            margin-top: 18px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+        "
+    >
+        Analyze My Skills
+    </button>
+
+    <div
+        id="skillResult"
+        style="
+            margin-top: 18px;
+            font-weight: bold;
+        "
+    ></div>
+
+</div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎓 Qualification</h3>
+                    <p id="careerQualification"></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>💻 Tools & Technologies</h3>
+                    <p id="careerTools"></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📈 Career Growth</h3>
+                    <div class="growth" id="careerGrowth"></div>
+                </div>
+
+                <div class="info-box full">
+                    <h3>🗺️ Career Roadmap</h3>
+                    <div class="roadmap" id="careerRoadmap"></div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🏢 Work Areas</h3>
+                    <p id="careerWorkAreas"></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📜 Certifications</h3>
+                    <p id="careerCertifications"></p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+   
+<script>
+
+    let currentCareerId = null;
+
+    let requiredSkills = [];
+
+function setupSkillGapAnalyzer(skillsText) {
+
+    requiredSkills = skillsText
+        .split(",")
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0);
+
+    const checklist = document.getElementById("skillChecklist");
+
+    checklist.innerHTML = requiredSkills.map((skill, index) => `
+        <label style="
+            display: block;
+            margin: 10px 0;
+            color: #334155;
+        ">
+            <input
+                type="checkbox"
+                value="${index}"
+                style="margin-right: 8px;"
+            >
+            ${skill}
+        </label>
+    `).join("");
+}
+function analyzeSkills() {
+
+    const selectedSkills =
+        Array.from(
+            document.querySelectorAll(
+                "#skillChecklist input:checked"
+            )
+        ).map(input =>
+            requiredSkills[parseInt(input.value)]
+        );
+
+    const missingSkills =
+        requiredSkills.filter(
+            skill => !selectedSkills.includes(skill)
+        );
+
+    const result =
+        document.getElementById("skillResult");
+
+    const totalSkills = requiredSkills.length;
+    const learnedSkills = selectedSkills.length;
+
+    const percentage =
+        totalSkills === 0
+            ? 0
+            : Math.round((learnedSkills / totalSkills) * 100);
+
+    if (missingSkills.length === 0) {
+
+        result.innerHTML = `
+            <div style="
+                padding: 16px;
+                background: #f0fdf4;
+                border: 1px solid #bbf7d0;
+                border-radius: 10px;
+                color: #166534;
+            ">
+                🎉 <strong>Excellent!</strong> You have selected all
+                required skills.
+
+                <div style="
+                    margin-top: 10px;
+                    font-weight: normal;
+                ">
+                    Skill readiness: ${percentage}%
+                </div>
+            </div>
+        `;
+
+        return;
+    }
+
+    result.innerHTML = `
+        <div style="
+            padding: 16px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+        ">
+
+            <div style="
+                color: #1d4ed8;
+                font-size: 16px;
+            ">
+                📊 <strong>Your Skill Readiness: ${percentage}%</strong>
+            </div>
+
+            <div style="
+                margin-top: 12px;
+                width: 100%;
+                height: 10px;
+                background: #dbeafe;
+                border-radius: 10px;
+                overflow: hidden;
+            ">
+                <div style="
+                    width: ${percentage}%;
+                    height: 100%;
+                    background: #2563eb;
+                    border-radius: 10px;
+                    transition: width 0.6s ease;
+                "></div>
+            </div>
+
+            <div style="
+                margin-top: 18px;
+                color: #dc2626;
+            ">
+                📚 <strong>Skills you should learn next:</strong>
+            </div>
+
+            <div style="
+                margin-top: 8px;
+                color: #334155;
+                font-weight: normal;
+                line-height: 1.7;
+            ">
+                ${missingSkills.join(", ")}
+            </div>
+
+        </div>
+    `;
+}
+
+        
+async function toggleSaveCareer() {
+
+    const button = document.getElementById("saveCareerBtn");
+ 
+       
+        const {
+            data: { user }
+        } = await supabaseClient.auth.getUser();
+
+        if (!user) {
+            alert("Please login to save a career.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        if (!currentCareerId) {
+            alert("Career information is not loaded yet.");
+            return;
+        }
+
+        const { data: existing, error: checkError } =
+            await supabaseClient
+                .from("saved_careers")
+                .select("id")
+                .eq("user_id", user.id)
+                .eq("career_id", currentCareerId)
+                .maybeSingle();
+
+        if (checkError) {
+            console.error(checkError);
+            alert("Unable to check saved career.");
+            return;
+        }
+
+        if (existing) {
+
+            const { error } = await supabaseClient
+                .from("saved_careers")
+                .delete()
+                .eq("id", existing.id);
+
+            if (error) {
+                console.error(error);
+                alert("Unable to remove career.");
+                return;
+            }
+
+            button.innerHTML = "♡ Save Career";
+
+        } else {
+
+            const { error } = await supabaseClient
+                .from("saved_careers")
+                .insert([
+                    {
+                        user_id: user.id,
+                        career_id: currentCareerId
+                    }
+                ]);
+
+            if (error) {
+                console.error(error);
+                alert("Unable to save career.");
+                return;
+            }
+
+            button.innerHTML = "♥ Saved";
+        }
+    }
+
+
+    async function checkSavedCareer() {
+
+        const {
+            data: { user }
+        } = await supabaseClient.auth.getUser();
+
+        if (!user || !currentCareerId) {
+            return;
+        }
+
+        const { data, error } =
+            await supabaseClient
+                .from("saved_careers")
+                .select("id")
+                .eq("user_id", user.id)
+                .eq("career_id", currentCareerId)
+                .maybeSingle();
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        const button = document.getElementById("saveCareerBtn");
+
+        if (data && button) {
+            button.innerHTML = "♥ Saved";
+        }
+    }
+
+
+    async function loadCareerDetails() {
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        const message = document.getElementById("message");
+        const careerContent = document.getElementById("careerContent");
+
+        if (!id) {
+            message.textContent = "Career not found.";
+            return;
+        }
+
+        currentCareerId = id;
+
+        const { data, error } = await supabaseClient
+            .from("careers")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+        if (error || !data) {
+            console.error(error);
+            message.textContent = "Unable to load career details.";
+            return;
+        }
+
+        document.getElementById("careerTitle").textContent =
+            data.title || "Career";
+
+        document.getElementById("careerDescription").textContent =
+            data.description || "No description available.";
+
+        document.getElementById("careerResponsibilities").textContent =
+            data.responsibilities || "Information not available.";
+
+        document.getElementById("careerSkills").textContent =
+            data.skills || "Information not available.";
+
+        setupSkillGapAnalyzer(data.skills || ""); 
+
+        document.getElementById("careerQualification").textContent =
+            data.qualification || "Information not available.";
+
+        document.getElementById("careerTools").textContent =
+            data.tools || "Information not available.";
+
+        document.getElementById("careerRoadmap").textContent =
+            data.roadmap || "Information not available.";
+
+        document.getElementById("careerGrowth").textContent =
+            data.growth || "Information not available.";
+
+        document.getElementById("careerWorkAreas").textContent =
+            data.work_areas || "Information not available.";
+
+        document.getElementById("careerCertifications").textContent =
+            data.certifications || "Information not available.";
+
+        document.getElementById("careerCategory").textContent =
+            data.category || "Career";
+
+        message.style.display = "none";
+        careerContent.style.display = "block";
+
+        await checkSavedCareer();
+    }
+
+
+    loadCareerDetails();
+
+</script>
+
+</body>
+</html>

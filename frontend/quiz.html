@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareerMap | Career Quiz</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: #111827;
+            color: white;
+            padding: 16px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        nav ul li a:hover {
+            color: #60a5fa;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            text-align: center;
+            padding: 55px 20px;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 17px;
+            opacity: 0.95;
+        }
+
+        /* MAIN */
+        .quiz-container {
+            max-width: 850px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        /* PROGRESS */
+        .progress-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .progress {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #progressBar {
+            height: 100%;
+            width: 20%;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            transition: width 0.3s ease;
+        }
+
+        /* QUESTION */
+        .question {
+            display: none;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h2 {
+            font-size: 25px;
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        .option {
+            display: block;
+            border: 2px solid #e5e7eb;
+            padding: 17px;
+            margin: 12px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            border-color: #2563eb;
+            background: #f0f6ff;
+        }
+
+        .option input {
+            margin-right: 10px;
+        }
+
+        /* BUTTONS */
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        button {
+            border: none;
+            padding: 13px 24px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        #prevBtn {
+            background: #6b7280;
+        }
+
+        #prevBtn:hover {
+            background: #4b5563;
+        }
+
+        /* RESULT */
+        #result {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        #result h2 {
+            font-size: 30px;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .result-subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+            border-radius: 18px;
+            padding: 30px;
+            margin: 20px 0 25px;
+        }
+
+        .result-card h3 {
+            font-size: 28px;
+            color: #2563eb;
+            margin-bottom: 12px;
+        }
+
+        .match-score {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0 20px;
+        }
+
+        #careerDescription {
+            color: #444;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .why-match {
+            text-align: left;
+            background: white;
+            border-left: 4px solid #7c3aed;
+            padding: 18px;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .secondary-btn {
+            background: #111827;
+        }
+
+        .secondary-btn:hover {
+            background: #374151;
+        }
+
+        .outline-btn {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .outline-btn:hover {
+            background: #eff6ff;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            background: #111827;
+            color: white;
+        }
+
+        /* MOBILE */
+        @media (max-width: 700px) {
+
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .question {
+                padding: 25px 18px;
+            }
+
+            .question h2 {
+                font-size: 21px;
+            }
+
+            #result {
+                padding: 25px 18px;
+            }
+
+            .result-card h3 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">CareerMap</div>
+
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="careers.html">Explore Careers</a></li>
+            <li><a href="quiz.html">Career Quiz</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Find Your Career Path 🎯</h1>
+        <p>Answer a few simple questions and discover a career that matches your interests.</p>
+    </section>
+
+    <!-- QUIZ -->
+    <div class="quiz-container">
+
+        <!-- PROGRESS -->
+        <div class="progress-wrapper">
+            <div class="progress-text" id="progressText">
+                Question 1 of 5
+            </div>
+
+            <div class="progress">
+                <div id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- QUESTION 1 -->
+        <div class="question active">
+
+            <h2>1. What do you enjoy doing most?</h2>
+
+            <label class="option">
+                <input type="radio" name="q1" value="software">
+                Building applications and solving programming problems
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q1" value="data">
+                Analysing information and finding patterns
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q1" value="security">
+                Protecting computers and digital information
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q1" value="design">
+                Creating attractive and easy-to-use designs
+            </label>
+
+        </div>
+
+        <!-- QUESTION 2 -->
+        <div class="question">
+
+            <h2>2. Which type of problem would you like to solve?</h2>
+
+            <label class="option">
+                <input type="radio" name="q2" value="software">
+                Creating a new software application
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q2" value="data">
+                Understanding data and making useful conclusions
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q2" value="security">
+                Finding and preventing security threats
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q2" value="design">
+                Improving the experience of a website or application
+            </label>
+
+        </div>
+
+        <!-- QUESTION 3 -->
+        <div class="question">
+
+            <h2>3. Which skill sounds most interesting to you?</h2>
+
+            <label class="option">
+                <input type="radio" name="q3" value="software">
+                Programming
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q3" value="data">
+                Data analysis
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q3" value="security">
+                Cybersecurity
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q3" value="design">
+                UI/UX design
+            </label>
+
+        </div>
+
+        <!-- QUESTION 4 -->
+        <div class="question">
+
+            <h2>4. What kind of work environment would you prefer?</h2>
+
+            <label class="option">
+                <input type="radio" name="q4" value="software">
+                Developing software and applications
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q4" value="data">
+                Working with reports, numbers and information
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q4" value="security">
+                Monitoring systems and protecting networks
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q4" value="design">
+                Designing websites and digital experiences
+            </label>
+
+        </div>
+
+        <!-- QUESTION 5 -->
+        <div class="question">
+
+            <h2>5. Which activity sounds most exciting?</h2>
+
+            <label class="option">
+                <input type="radio" name="q5" value="software">
+                Coding a useful application
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q5" value="data">
+                Discovering insights from data
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q5" value="security">
+                Securing a computer system
+            </label>
+
+            <label class="option">
+                <input type="radio" name="q5" value="design">
+                Designing a beautiful interface
+            </label>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="buttons">
+
+            <button id="prevBtn" onclick="previousQuestion()" style="display:none;">
+                ← Previous
+            </button>
+
+            <button id="nextBtn" onclick="nextQuestion()">
+                Next →
+            </button>
+
+        </div>
+
+        <!-- RESULT -->
+        <div id="result">
+
+            <h2>Your Career Match 🎉</h2>
+
+            <p class="result-subtitle">
+                Based on your answers, CareerMap found a career that matches your interests.
+            </p>
+
+            <div class="result-card">
+
+                <h3 id="careerName">Software Developer</h3>
+
+                <div class="match-score" id="matchScore">
+                    100% Match
+                </div>
+
+                
+
+<div style="
+    width: 100%;
+    max-width: 500px;
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px auto 20px;
+">
+    <div
+        id="matchBar"
+        style="
+            width: 0%;
+            height: 100%;
+            background: #2563eb;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        "
+    ></div>
+</div>
+ 
+
+                <p id="careerDescription"></p>
+
+                <div class="why-match">
+                    <strong>💡 Why this matches you:</strong>
+                    <p id="whyMatch"></p>
+                </div>
+
+            </div>
+
+            <div class="result-actions">
+
+                <button onclick="viewCareerDetails()">
+                    🔎 View Career Details
+                </button>
+
+                <button class="secondary-btn" onclick="location.href='careers.html'">
+                    📚 Explore All Careers
+                </button>
+
+                <button class="outline-btn" onclick="location.reload()">
+                    🔄 Retake Quiz
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 CareerMap | Career Exploration & Guidance Platform</p>
+    </footer>
+
+
+    <script>
+
+        let currentQuestion = 0;
+        let recommendedCareerId = null;
+
+        const questions = document.querySelectorAll(".question");
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        /*
+        --------------------------------------------------
+        SHOW QUESTION
+        --------------------------------------------------
+        */
+
+        function showQuestion() {
+
+            questions.forEach((question, index) => {
+
+                question.classList.toggle(
+                    "active",
+                    index === currentQuestion
+                );
+
+            });
+
+            const percentage =
+                ((currentQuestion + 1) / questions.length) * 100;
+
+            progressBar.style.width = percentage + "%";
+
+            progressText.textContent =
+                `Question ${currentQuestion + 1} of ${questions.length}`;
+
+            document.getElementById("prevBtn").style.display =
+                currentQuestion === 0 ? "none" : "block";
+
+            document.getElementById("nextBtn").textContent =
+                currentQuestion === questions.length - 1
+                ? "See My Result 🎯"
+                : "Next →";
+        }
+
+
+        /*
+        --------------------------------------------------
+        NEXT QUESTION
+        --------------------------------------------------
+        */
+
+        function nextQuestion() {
+
+            const current = questions[currentQuestion];
+
+            const selected = current.querySelector(
+                'input[type="radio"]:checked'
+            );
+
+            if (!selected) {
+
+                alert("Please select an answer first.");
+
+                return;
+            }
+
+            if (currentQuestion < questions.length - 1) {
+
+                currentQuestion++;
+
+                showQuestion();
+
+            } else {
+
+                showResult();
+
+            }
+        }
+
+
+        /*
+        --------------------------------------------------
+        PREVIOUS QUESTION
+        --------------------------------------------------
+        */
+
+        function previousQuestion() {
+
+            if (currentQuestion > 0) {
+
+                currentQuestion--;
+
+                showQuestion();
+
+            }
+        }
+
+
+        /*
+        --------------------------------------------------
+        SHOW RESULT
+        --------------------------------------------------
+        */
+
+        async function showResult() {
+
+            let scores = {
+
+                software: 0,
+                data: 0,
+                security: 0,
+                design: 0
+
+            };
+
+
+            document
+                .querySelectorAll('input[type="radio"]:checked')
+                .forEach(answer => {
+
+                    scores[answer.value]++;
+
+                });
+
+
+            /*
+            Find highest score
+            */
+
+            let result = Object.keys(scores).reduce((a, b) =>
+                scores[a] > scores[b] ? a : b
+            );
+
+
+            /*
+            Career information
+            */
+
+            const careers = {
+
+                software: {
+
+                    name: "Software Developer",
+
+                    description:
+                    "You may enjoy building applications, solving technical problems and working with programming.",
+
+                    why:
+                    "Your answers show an interest in programming, problem-solving and creating useful software applications."
+
+                },
+
+                data: {
+
+                    name: "Data Analyst",
+
+                    description:
+                    "You may enjoy analysing information, finding patterns and using data to support decisions.",
+
+                    why:
+                    "Your answers show an interest in analysing information, identifying patterns and working with data."
+
+                },
+
+                security: {
+
+                    name: "Cybersecurity Analyst",
+
+                    description:
+                    "You may enjoy protecting systems, networks and digital information from security threats.",
+
+                    why:
+                    "Your answers show an interest in protecting systems, finding security problems and keeping information safe."
+
+                },
+
+                design: {
+
+                    name: "UI/UX Designer",
+
+                    description:
+                    "You may enjoy creativity, visual design and creating useful digital experiences.",
+
+                    why:
+                    "Your answers show an interest in creativity, interface design and improving users' digital experiences."
+
+                }
+
+            };
+
+
+            const selectedCareer = careers[result];
+
+            const score = scores[result];
+
+            const matchPercentage =
+                Math.round((score / questions.length) * 100);
+
+
+            /*
+            Display result
+            */
+
+            document.getElementById("careerName").textContent =
+                selectedCareer.name;
+
+            document.getElementById("careerDescription").textContent =
+                selectedCareer.description;
+
+            document.getElementById("whyMatch").textContent =
+                selectedCareer.why;
+
+            document.getElementById("matchScore").textContent =
+                matchPercentage + "% Match";
+
+                const matchBar = document.getElementById("matchBar");
+
+if (matchBar) {
+    matchBar.style.width = matchPercentage + "%";
+}
+
+
+            /*
+            Get career ID from Supabase
+            */
+
+            try {
+
+                const { data, error } = await supabaseClient
+                    .from("careers")
+                    .select("id,title")
+                    .eq("title", selectedCareer.name)
+                    .single();
+
+
+                if (!error && data) {
+
+                    recommendedCareerId = data.id;
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to find career ID:",
+                    error
+                );
+
+            }
+
+
+            /*
+            Hide quiz
+            */
+
+            document.querySelector(".progress-wrapper").style.display =
+                "none";
+
+            questions.forEach(question => {
+
+                question.style.display = "none";
+
+            });
+
+            document.querySelector(".buttons").style.display =
+                "none";
+
+
+            /*
+            Show result
+            */
+
+            document.getElementById("result").style.display =
+                "block";
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        VIEW CAREER DETAILS
+        --------------------------------------------------
+        */
+
+        function viewCareerDetails() {
+
+            if (recommendedCareerId) {
+
+                window.location.href =
+                    "career-details.html?id=" + recommendedCareerId;
+
+            } else {
+
+                window.location.href =
+                    "careers.html";
+
+            }
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        START QUIZ
+        --------------------------------------------------
+        */
+
+        showQuestion();
+
+    </script>
+
+</body>
+</html>
