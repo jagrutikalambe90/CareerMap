@@ -132,7 +132,6 @@
         <div>
             <a href="index.html">Home</a>
             <a href="careers.html">Explore Careers</a>
-            <a href="login.html">Login</a>
         </div>
     </nav>
 
@@ -184,11 +183,6 @@
 
             <p id="message"></p>
 
-            <p class="login-link">
-                Already have an account?
-                <a href="login.html">Login</a>
-            </p>
-
         </div>
 
     </section>
@@ -225,11 +219,10 @@
                 return;
             }
 
-            message.textContent =
-                "Account created successfully! Check your email if verification is required.";
-            message.style.color = "#16a34a";
+            message.textContent = "Account created successfully!";
+message.style.color = "#16a34a";
 
-            document.getElementById("registerForm").reset();
+window.location.href = "dashboard.html";
 
         });
     </script>
